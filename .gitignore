@@ -1,0 +1,14 @@
+node_modules/
+bun.lockb
+package-lock.json
+.DS_Store
+*.log
+.env
+.env.local
+
+# generated decks (local working directories)
+slide-deck/
+
+# editor
+.vscode/
+.idea/

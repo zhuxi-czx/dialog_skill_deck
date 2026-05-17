@@ -1,0 +1,32 @@
+{
+  "name": "dialog_skill_deck",
+  "version": "0.1.0",
+  "description": "Slide deck generator skill — 5 curated visual styles for science, engineering, and scholarly content. Produces PNG slides + PPTX + PDF.",
+  "type": "module",
+  "scripts": {
+    "merge-pptx": "bun run scripts/merge-to-pptx.ts",
+    "merge-pdf": "bun run scripts/merge-to-pdf.ts"
+  },
+  "dependencies": {
+    "pptxgenjs": "^3.12.0",
+    "pdf-lib": "^1.17.1"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhuxi-czx/dialog_skill_deck.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "skill",
+    "slide-deck",
+    "presentation",
+    "pptx",
+    "pdf",
+    "science",
+    "engineering"
+  ]
+}
