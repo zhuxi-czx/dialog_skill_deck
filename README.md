@@ -2,6 +2,8 @@
 
 A focused slide-deck generation skill for science, engineering, and scholarly content. Drop-in for any Claude Code, Claude Agent SDK, or compatible runtime that supports skills. Produces presentation-ready PNG slides, PPTX, and PDF.
 
+**v0.2.0 — hybrid text rendering.** Image-gen produces text-free background illustrations; precise text (titles, CJK labels, equations, legend, scale annotations) is composited on top via SVG using system fonts. This eliminates the broken-text failure mode that plagues every image-gen backend today. Per-preset Deck Signatures lock down consistent text placement across all slides; per-slide narrative beats modulate composition density.
+
 ## Five curated styles
 
 Each preset is a complete style spec (palette, typography, layout rules, do/don't list) — no custom-dimensions remixing.
@@ -47,13 +49,14 @@ Skip confirmation for fast runs:
 
 ## Pipeline
 
-1. Analyze source content (topic, language, length, signals)
+1. Analyze source content (topic, language, length, signals, narrative arc)
 2. Confirm style + audience + slide count (skippable)
-3. Generate outline with embedded `STYLE_INSTRUCTIONS`
+3. Generate outline with embedded `STYLE_INSTRUCTIONS` + narrative beats
 4. (Optional) Review outline
-5. Generate per-slide image prompts
+5. Generate per-slide prompts (visual prompt + `text_layer` YAML)
 6. (Optional) Review prompts
-7. Render slide images (parallel batches)
+7. Render background images (parallel; `NN-slide-{slug}-bg.png`, no text)
+7.5. Composite SVG text overlay → `NN-slide-{slug}.png`
 8. Merge to PPTX + PDF
 9. Output summary
 

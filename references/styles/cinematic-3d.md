@@ -83,6 +83,80 @@ Medium-low. One hero 3D + 1 insight card + 3-6 floating labels + optional compar
 - Apply hand-drawn aesthetics (no pencil, no watercolor, no sketch lines)
 - Add slide numbers, footers, headers, page logos (insight card replaces "key takeaway box")
 
+## Deck Signature
+
+Text placement and styling values used by `scripts/compose-text.ts`. Positions are fractional `[x, y]` on the image (0,0 = top-left).
+
+```yaml
+title:
+  position: [0.05, 0.18]
+  align: left
+  font_family: cjk
+  font_size: 52
+  font_weight: 800
+  color: "#FFFFFF"
+
+subtitle:
+  position: [0.05, 0.27]
+  align: left
+  font_family: cjk
+  font_size: 24
+  font_weight: 400
+  color: "#D8E4F0"
+
+credentials_banner:
+  enabled: true
+  position: [0.05, 0.06]
+  align: left
+  pill:
+    fill: "#1A2A4A"
+    padding: [8, 14]
+    border_radius: 14
+  font_family: latin
+  font_size: 13
+  color: "#FFFFFF"
+
+label_text:
+  font_family: cjk
+  font_size: 18
+  font_weight: 400
+  color: "#FFFFFF"
+
+label_leader:
+  color: "#4DD0E1"
+  width: 1.5
+  end_shape: filled_circle
+  anchor_shape: none
+
+insight_card:
+  default_position: [0.5, 0.78]
+  align: center
+  width_fraction: 0.6
+  fill: "#15264A"
+  fill_opacity: 0.90
+  gradient_border:
+    from: "#C9A24C"
+    to: "#4DD0E1"
+    width: 2
+  padding: 24
+  border_radius: 12
+  body:
+    font_family: cjk
+    font_size: 22
+    font_weight: 500
+    color: "#D8E4F0"
+    style: italic
+
+legend:
+  enabled: false
+
+scale_annotation:
+  default_position: bottom-left
+  font_family: latin
+  font_size: 13
+  color: "#7A8AA8"
+```
+
 ## Best For
 
 High-end popular-science deep dives, keynote-style technical lectures, public science communication targeting general audiences, conference visualization documents, "wow-factor" pitches that need to convey scientific gravitas without being a textbook. Topics: molecular/quantum scale phenomena, energy systems, frontier physics/biology/AI, cosmology, materials science. Output language tracks source content.

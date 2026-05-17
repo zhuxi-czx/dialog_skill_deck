@@ -1,6 +1,10 @@
 #!/usr/bin/env bun
 // Merge NN-slide-*.png files in a directory into a 16:9 PPTX.
 // Usage: bun run merge-to-pptx.ts <slide-deck-dir>
+//
+// Lookup order per slide N:
+//   1. NN-slide-{slug}.png       (composited — preferred, has all text)
+//   2. NN-slide-{slug}-bg.png    (background only — fallback if compose-text not run)
 
 import { readdirSync, existsSync, renameSync } from "node:fs";
 import { join, basename, resolve } from "node:path";
@@ -19,8 +23,27 @@ if (!existsSync(dir)) {
 }
 
 const slug = basename(dir.replace(/\/$/, ""));
-const slidePattern = /^\d{2}-slide-.+\.png$/;
-const files = readdirSync(dir).filter((f) => slidePattern.test(f)).sort();
+
+// Collect slide files. For each NN-slide-{slug}, prefer composited over -bg.
+const all = readdirSync(dir);
+const seen = new Map<string, string>(); // NN-slide-slug → chosen filename
+for (const f of all) {
+  const composited = f.match(/^(\d{2}-slide-[^.]+)\.png$/);
+  if (composited && !f.includes("-bg")) {
+    seen.set(composited[1], f);
+  }
+}
+// Fallback: -bg.png when no composited version exists
+for (const f of all) {
+  const bg = f.match(/^(\d{2}-slide-[^.]+)-bg\.png$/);
+  if (bg && !seen.has(bg[1])) {
+    seen.set(bg[1], f);
+  }
+}
+
+const files = Array.from(seen.entries())
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, f]) => f);
 
 if (files.length === 0) {
   console.error(`No NN-slide-*.png files found in ${dir}`);
@@ -29,7 +52,6 @@ if (files.length === 0) {
 
 const outPath = join(dir, `${slug}.pptx`);
 
-// Backup existing file
 if (existsSync(outPath)) {
   const ts = new Date()
     .toISOString()
@@ -61,3 +83,4 @@ for (const file of files) {
 
 await pptx.writeFile({ fileName: outPath });
 console.log(`Created ${outPath} (${files.length} slides)`);
+console.log(`Note: text is baked into slide images. Native editable text boxes planned for v0.3.0.`);

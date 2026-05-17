@@ -81,6 +81,81 @@ Medium-low. Per slide: 1 central illustration + 4-8 floating labels + 1 bottom i
 - Crowd the slide with multiple competing illustrations
 - Add page numbers, footers, headers, or logos
 
+## Deck Signature
+
+Text placement and styling values used by `scripts/compose-text.ts`. Positions are fractional `[x, y]` on the image (0,0 = top-left).
+
+```yaml
+title:
+  position: [0.05, 0.10]
+  align: left
+  font_family: cjk
+  font_size: 40
+  font_weight: 500
+  color: "#2A2620"
+  max_lines: 2
+
+subtitle:
+  position: [0.05, 0.20]
+  align: left
+  font_family: cjk
+  font_size: 22
+  font_weight: 400
+  color: "#3A3528"
+
+top_right_badge:
+  enabled: true
+  position: [0.95, 0.06]
+  align: right
+  pill:
+    fill: transparent
+    border: "#6B5D48"
+    border_width: 1
+    padding: [6, 12]
+    border_radius: 14
+  font_family: cjk
+  font_size: 14
+  color: "#6B5D48"
+
+label_text:
+  font_family: cjk
+  font_size: 16
+  font_weight: 400
+  color: "#2A2620"
+
+label_leader_organic:
+  color: "#8B6B3D"
+  width: 1
+  end_shape: arrowhead
+  anchor_shape: none
+
+label_leader_technical:
+  color: "#5B7CA8"
+  width: 1
+  end_shape: arrowhead
+  anchor_shape: none
+
+bottom_insight:
+  enabled: true
+  position: [0.05, 0.92]
+  align: left
+  prefix: "Insight: "
+  font_family: cjk
+  font_size: 16
+  font_weight: 400
+  color: "#6B5D48"
+  style: italic
+
+legend:
+  enabled: false
+
+scale_annotation:
+  default_position: bottom-right
+  font_family: latin
+  font_size: 13
+  color: "#6B5D48"
+```
+
 ## Best For
 
 Life science deep-dive whitepapers (biology, medicine, anatomy, neuroscience, evolution), classical-feeling popular-science long reads, humanities-adjacent science writing, history-of-science decks, philosophy of science / philosophy of mind content, scholarly research reports with both organic (specimen) and analytical (model, system, data) components. Output language tracks source content.

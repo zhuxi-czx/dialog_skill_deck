@@ -1,6 +1,6 @@
 # Content Analysis Framework
 
-Before outline generation, analyze the source content to extract structure, audience signals, and style routing. Save findings to `analysis.md`.
+Before outline generation, analyze the source content to extract structure, audience signals, style routing, AND a narrative arc. Save findings to `analysis.md`.
 
 ## 1. Message Hierarchy
 
@@ -30,11 +30,11 @@ Routing priority:
 3. First Auto-Selection row whose signals match
 4. Fall back to `bio-3d` (safe default for science content)
 
-When signals match multiple presets, pick the one whose row matched first in the SKILL.md table (table order = priority).
+When signals match multiple presets, pick the first match in table order.
 
 ## 4. Language Detection
 
-Detect the source's primary language. The deck's output language tracks this — no translation.
+Detect the source's primary language. Output language tracks this — no translation.
 
 Mixed-language sources: pick the dominant language; treat occasional foreign terms as terminology to preserve verbatim.
 
@@ -45,26 +45,61 @@ Mixed-language sources: pick the dominant language; treat occasional foreign ter
 | <1000 words | 5-10 |
 | 1000-3000 words | 10-18 |
 | 3000-5000 words | 15-25 |
-| >5000 words | 20-30 (consider splitting into multiple decks) |
+| >5000 words | 20-30 (consider splitting) |
 
-Override via `--slides <N>` or by user choice in Step 2.
+## 6. Narrative Arc (NEW v0.2.0)
 
-## 6. Visual Opportunity Map
+A deck is a story. Assign each slide a **narrative beat** that drives composition density (see `references/base-prompt.md` for how beats modulate visuals).
+
+| Beat | Purpose | Composition Energy |
+|---|---|---|
+| `hook` | Grab attention, set stakes | Highest drama, single bold focal point |
+| `setup` | Establish context, frame the problem | Balanced, calm, informative |
+| `development` | Deliver evidence, explanations, examples | Standard preset density |
+| `climax` | The key insight / "so what" moment | Maximum density allowed by preset |
+| `resolution` | Synthesize, close, hand off | Quieter, more negative space |
+
+### Default Beat Distribution
+
+For an N-slide deck:
+
+| Slide | Beat |
+|---|---|
+| 01 (Cover) | `hook` |
+| 02 | `setup` |
+| 03 to N-3 | `development` (with `setup` or `climax` insertions per content) |
+| N-2 (or earlier "the so what" slide) | `climax` |
+| N-1 | `resolution` (lead-in) |
+| N (Back Cover) | `resolution` |
+
+### Assignment Heuristic
+
+Reading the content section by section:
+
+- **Beginning sections** (context, history, why this matters) → `setup`
+- **Middle sections** (mechanisms, examples, data) → `development`
+- **The "aha" or main insight section** → `climax` (usually one slide, occasionally two)
+- **Conclusion / takeaways / next steps** → `resolution`
+
+If no clear climax exists in the content, mark the densest evidence slide as `climax`.
+
+## 7. Visual Opportunity Map
 
 For each piece of content, identify the right visual treatment:
 
-| Content type | Visual treatment |
-|---|---|
-| Comparison | Side-by-side, before/after |
-| Process | Flow diagram, numbered steps |
-| Hierarchy | Tree, pyramid, layered diagram |
-| Timeline | Horizontal/vertical timeline |
-| Statistics | Highlighted number, simple chart |
-| Concept | Metaphor, central illustration |
-| Relationship | Network, Venn diagram |
-| Enumeration | Grid of thumbnails, icon row |
+| Content type | Visual treatment | Default Layout |
+|---|---|---|
+| Comparison | Side-by-side, before/after | `split-comparison` |
+| Process | Flow diagram, numbered steps | `stacked-process` |
+| Hierarchy | Tree, pyramid, layered diagram | `centered-hero` |
+| Timeline | Horizontal/vertical timeline | `centered-hero` |
+| Statistics | Highlighted number, simple chart | `annotated-graph` |
+| Concept | Metaphor, central illustration | `centered-hero` |
+| Relationship | Network, Venn diagram | `centered-hero` |
+| Enumeration | Grid of thumbnails, icon row | `grid-thumbnails` |
+| Dense reference | Single complex diagram + callouts | `diagram-with-callouts` |
 
-## 7. Keep / Simplify / Visualize / Omit
+## 8. Keep / Simplify / Visualize / Omit
 
 For each section of source content:
 
@@ -73,7 +108,7 @@ For each section of source content:
 - **Visualize**: Data tables → highlighted numbers; process descriptions → flow diagrams; comparisons → side-by-side
 - **Omit**: Tangents, redundant examples, excessive caveats, background the audience already knows
 
-## 8. Analysis Output
+## 9. Analysis Output
 
 Save to `analysis.md`:
 
@@ -92,9 +127,18 @@ supporting_points:
   - <point 2>
   - <point 3>
 call_to_action: <optional>
+narrative_arc:
+  - slide: 01
+    beat: hook
+    content_section: "<source section title>"
+  - slide: 02
+    beat: setup
+    content_section: "..."
+  # ... one entry per slide
 visual_opportunities:
   - section: <section title>
-    treatment: <comparison|process|...>
+    treatment: comparison | process | ...
+    layout: <recommended layout>
 ```
 
-This file is the input to Step 2 confirmation and Step 3 outline generation.
+This file is the input to Step 2 confirmation, Step 3 outline generation, and Step 5 prompt generation.

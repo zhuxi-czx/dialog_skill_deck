@@ -80,6 +80,85 @@ Medium-high. Per slide: 1 hero drawing + 4-10 boxed callouts + optional left/rig
 - Place decorative icons, badges, or watermarks
 - Use slide numbers, footers, headers, or logos
 
+## Deck Signature
+
+Text placement and styling values used by `scripts/compose-text.ts`. Positions are fractional `[x, y]` on the image (0,0 = top-left).
+
+```yaml
+section_header:
+  position: [0.03, 0.06]
+  align: left
+  pill:
+    fill: "#14243A"
+    border: "#3B5070"
+    border_width: 1
+    padding: [8, 14]
+    border_radius: 6
+  font_family: cjk
+  font_size: 22
+  font_weight: 600
+  color: "#FFFFFF"
+
+title:
+  alias_of: section_header
+
+label_text:
+  bilingual: true
+  box:
+    fill: "rgba(20,36,58,0.7)"
+    border: "#3B5070"
+    border_width: 1
+    padding: [6, 10]
+    border_radius: 4
+  font_family: cjk
+  font_size: 16
+  font_weight: 400
+  color: "#FFFFFF"
+
+label_leader:
+  color: "#FFFFFF"
+  width: 1
+  end_shape: open_circle
+  anchor_shape: none
+
+vector_arrows:
+  motion:
+    color: "#4DD0E1"
+    width: 2
+    head: filled
+  force:
+    color: "#F2A654"
+    width: 2
+    head: filled
+  critical:
+    color: "#E57373"
+    width: 2
+    head: filled
+
+text_panel:
+  enabled: true
+  default_side: left
+  position_left: [0.03, 0.18]
+  position_right: [0.97, 0.18]
+  width_fraction: 0.28
+  body:
+    font_family: cjk
+    font_size: 14
+    color: "#FFFFFF"
+  bullet:
+    color: "#4DD0E1"
+    style: dot
+
+legend:
+  enabled: false
+
+scale_annotation:
+  default_position: bottom-left
+  font_family: latin
+  font_size: 13
+  color: "#7A8AA8"
+```
+
 ## Best For
 
 Mechanical engineering teaching (machines, mechanisms, structural systems), physics modeling (free-body diagrams, force analysis, dynamics, kinematics), electrical schematics (when technical-blueprint mode preferred over notebook sketch), CS systems architecture diagrams, controls/signal-flow diagrams, any topic where component-by-component bilingual labeling and dimensional precision matter more than artistic atmosphere. Output language tracks source content; technical terminology gets bilingual treatment per the source.

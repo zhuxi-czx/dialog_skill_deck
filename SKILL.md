@@ -1,7 +1,7 @@
 ---
 name: dialog_skill_deck
-description: Generates professional slide deck images (PNG + PPTX + PDF) from content using 5 curated visual styles for science, engineering, and scholarly topics. Use when the user asks to "create slides", "make a presentation", "generate deck", "slide deck", or "PPT".
-version: 0.1.0
+description: Generates professional slide deck images (PNG + PPTX + PDF) from content using 5 curated visual styles for science, engineering, and scholarly topics. Image-gen produces text-free backgrounds; precise text (titles, CJK labels, equations, legend, scale annotations) is composited via SVG using system fonts — eliminating the broken-text failure mode common to image-gen models. Use when the user asks to "create slides", "make a presentation", "generate deck", "slide deck", or "PPT".
+version: 0.2.0
 metadata:
   homepage: https://github.com/zhuxi-czx/dialog_skill_deck
   requires:
@@ -14,11 +14,18 @@ metadata:
 
 Transform content into a slide deck (PNG slides + merged PPTX + PDF). Five curated visual styles cover science, engineering, and scholarly content. No style remixing — pick one of the five.
 
+## v0.2.0 Pipeline Changes
+
+- **Hybrid text rendering** (default): image-gen produces background images WITHOUT text; SVG text is composited on top via `scripts/compose-text.ts` using proper CJK / Latin / mono fonts. Eliminates broken Chinese characters, garbled equations, and warped numerals.
+- **Per-slide narrative beats** drive composition density (hook / setup / development / climax / resolution).
+- **Per-preset Deck Signature** locks down title/label/legend/scale positioning and styling for cross-slide visual consistency.
+
 ## What This Skill Is Not
 
 - Not a remix engine — no "custom dimensions" mode
 - Not a multilingual tool — output language always tracks source content (no translation)
 - Not a general-purpose template — presets are tuned for educational / technical / scholarly content
+- Not an editable-PPTX producer (yet) — v0.2.0 PPTX is image-with-baked-text; native editable text boxes are planned for v0.3.0
 
 ## User Input Tools
 
@@ -84,10 +91,16 @@ Respond to the user in their language across questions, progress reports, errors
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/merge-to-pptx.ts` | Merge PNG slides into PowerPoint |
-| `scripts/merge-to-pdf.ts` | Merge PNG slides into PDF |
+| `scripts/compose-text.ts` | Composite SVG text layer onto background PNGs (Step 7.5) |
+| `scripts/merge-to-pptx.ts` | Merge composited PNG slides into PowerPoint |
+| `scripts/merge-to-pdf.ts` | Merge composited PNG slides into PDF |
 
-First-time setup: `(cd {baseDir} && ${BUN_X} install)` — fetches `pptxgenjs` and `pdf-lib`.
+First-time setup: `(cd {baseDir} && ${BUN_X} install)` — fetches `pptxgenjs`, `pdf-lib`, `sharp`, and `yaml`.
+
+System fonts needed by `compose-text.ts`:
+- **macOS**: PingFang SC + Inter (or system-ui) — built-in. No action.
+- **Linux**: `sudo apt install fonts-noto-cjk fonts-inter` (Debian/Ubuntu) or equivalent.
+- **Windows**: Microsoft YaHei + Segoe UI — built-in. No action.
 
 ## Options
 
@@ -174,9 +187,10 @@ slide-deck/{topic-slug}/
 ├── source-{slug}.{ext}
 ├── analysis.md
 ├── outline.md
-├── prompts/NN-slide-{slug}.md
-├── NN-slide-{slug}.png
-├── refs/NN-ref-{slug}.{ext}      (optional)
+├── prompts/NN-slide-{slug}.md      (YAML frontmatter with text_layer + visual prompt body)
+├── NN-slide-{slug}-bg.png          (image-gen output — text-free background)
+├── NN-slide-{slug}.png             (composited — bg + SVG text overlay; used by PPTX/PDF)
+├── refs/NN-ref-{slug}.{ext}        (optional)
 ├── {topic-slug}.pptx
 └── {topic-slug}.pdf
 ```
@@ -190,13 +204,14 @@ slide-deck/{topic-slug}/
 Copy this checklist and check items off:
 
 ```
-- [ ] Step 1: Setup & analyze
+- [ ] Step 1: Setup & analyze (+ narrative arc)
 - [ ] Step 2: Confirmation ⚠️ REQUIRED
-- [ ] Step 3: Generate outline
+- [ ] Step 3: Generate outline (with narrative beats per slide)
 - [ ] Step 4: Review outline (conditional)
-- [ ] Step 5: Generate prompts
+- [ ] Step 5: Generate prompts (visual prompt + text_layer YAML per slide)
 - [ ] Step 6: Review prompts (conditional)
-- [ ] Step 7: Generate images
+- [ ] Step 7: Generate background images (NN-slide-{slug}-bg.png, no text)
+- [ ] Step 7.5: Compose text overlay (NN-slide-{slug}.png via compose-text.ts)
 - [ ] Step 8: Merge to PPTX/PDF
 - [ ] Step 9: Output summary
 ```
@@ -260,15 +275,28 @@ Stop if `--prompts-only`. Skip Step 6 if `skip_prompt_review`.
 
 Display the prompts index (`# | Filename | Slide Title`) and ask: proceed / edit prompts first / regenerate. Branches mirror Step 4.
 
-### Step 7: Generate Images
+### Step 7: Generate Background Images
 
 1. Resolve the image backend via the Image Generation Tools rule.
 2. Confirm every `prompts/NN-slide-{slug}.md` exists (hard requirement).
 3. Session ID: `slides-{topic-slug}-{timestamp}` — pass to the backend if it supports sessions.
-4. Build a task list with each slide's prompt file, output PNG path, aspect ratio (16:9), session ID, and verified direct references.
-5. Dispatch per the Batch Generation Policy. Backup rule applies to PNG files before dispatch. Report progress (`Generated X/N`). Retry failed items once.
+4. Build a task list with each slide's prompt file, **output target `NN-slide-{slug}-bg.png`** (not `NN-slide-{slug}.png`), aspect ratio (16:9), session ID, and verified direct references.
+5. Dispatch per the Batch Generation Policy. Backup rule applies to `-bg.png` files before dispatch. Report progress (`Generated X/N`). Retry failed items once.
+
+The image-gen prompt instructs the model to leave text-free zones (see `references/base-prompt.md` — Text Rendering Policy). Text is added in Step 7.5.
 
 `--regenerate N` jumps to this step for the named slides only. `--images-only` starts here with existing prompts.
+
+### Step 7.5: Compose Text Overlay (Default: Hybrid Mode)
+
+```bash
+${BUN_X} {baseDir}/scripts/compose-text.ts <slide-deck-dir>
+# or per-slide: ${BUN_X} {baseDir}/scripts/compose-text.ts <slide-deck-dir> 3
+```
+
+This reads each slide's `prompts/NN-slide-{slug}.md` YAML frontmatter (`text_layer` block), pulls the preset's Deck Signature from `references/styles/{preset}.md`, builds an SVG layer (title, subtitle, labels with leader lines, legend, scale annotation, insight cards), and composites it onto `NN-slide-{slug}-bg.png` to produce `NN-slide-{slug}.png`.
+
+**Skip this step only when** `text_rendering_mode: legacy` is set in `EXTEND.md` AND your image-gen backend reliably renders CJK / equations (rare in practice). In legacy mode, image-gen produces `NN-slide-{slug}.png` directly with text baked in.
 
 ### Step 8: Merge
 
@@ -276,6 +304,8 @@ Display the prompts index (`# | Filename | Slide Title`) and ask: proceed / edit
 ${BUN_X} {baseDir}/scripts/merge-to-pptx.ts <slide-deck-dir>
 ${BUN_X} {baseDir}/scripts/merge-to-pdf.ts <slide-deck-dir>
 ```
+
+Both scripts auto-detect: prefer `NN-slide-{slug}.png` (composited); fall back to `NN-slide-{slug}-bg.png` if compose-text wasn't run.
 
 First time only: `(cd {baseDir} && ${BUN_X} install)` to fetch dependencies.
 

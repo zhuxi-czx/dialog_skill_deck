@@ -19,8 +19,21 @@ if (!existsSync(dir)) {
 }
 
 const slug = basename(dir.replace(/\/$/, ""));
-const slidePattern = /^\d{2}-slide-.+\.png$/;
-const files = readdirSync(dir).filter((f) => slidePattern.test(f)).sort();
+
+// Collect slide files. For each NN-slide-{slug}, prefer composited over -bg.
+const all = readdirSync(dir);
+const seen = new Map<string, string>();
+for (const f of all) {
+  const composited = f.match(/^(\d{2}-slide-[^.]+)\.png$/);
+  if (composited && !f.includes("-bg")) seen.set(composited[1], f);
+}
+for (const f of all) {
+  const bg = f.match(/^(\d{2}-slide-[^.]+)-bg\.png$/);
+  if (bg && !seen.has(bg[1])) seen.set(bg[1], f);
+}
+const files = Array.from(seen.entries())
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, f]) => f);
 
 if (files.length === 0) {
   console.error(`No NN-slide-*.png files found in ${dir}`);

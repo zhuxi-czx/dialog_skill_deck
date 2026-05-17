@@ -86,6 +86,85 @@ Medium-high. Per slide: 1 central schematic + 2-5 colored annotation boxes + opt
 - Add slide numbers, footers, headers, or logos
 - Place full sentences inside diagram boxes — keep annotations terse
 
+## Deck Signature
+
+Text placement and styling values used by `scripts/compose-text.ts`. Positions are fractional `[x, y]` on the image (0,0 = top-left).
+
+```yaml
+title:
+  position: [0.04, 0.08]
+  align: left
+  font_family: cjk
+  font_size: 32
+  font_weight: 600
+  color: "#1A1A1A"
+
+subtitle:
+  position: [0.04, 0.15]
+  align: left
+  font_family: cjk
+  font_size: 18
+  font_weight: 400
+  color: "#3A3528"
+
+label_text:
+  font_family: cjk
+  font_size: 15
+  font_weight: 400
+  color: "#1A1A1A"
+
+label_leader:
+  color: "#1A1A1A"
+  width: 1.5
+  end_shape: arrowhead
+  anchor_shape: none
+
+annotation_box:
+  padding: 12
+  border_radius: 4
+  border_width: 1.5
+  fill: "#FFFFFF"
+  body:
+    font_family: cjk
+    font_size: 14
+    color: "#1A1A1A"
+  roles:
+    equation:
+      border: "#4A9DB8"
+      label_prefix: ""
+    insight:
+      border: "#C8943A"
+      label_prefix: ""
+    explanation:
+      border: "#3F5B82"
+      label_prefix: ""
+    contrast:
+      border: "#D97757"
+      label_prefix: ""
+
+step_badge:
+  radius: 14
+  fill: "#3F5B82"
+  text_color: "#FFFFFF"
+  font_family: latin
+  font_size: 16
+  font_weight: 700
+
+equation:
+  font_family: mono
+  font_size: 16
+  color: "#1A1A1A"
+
+legend:
+  enabled: false
+
+scale_annotation:
+  default_position: bottom-left
+  font_family: latin
+  font_size: 13
+  color: "#3A3528"
+```
+
 ## Best For
 
 Physics derivations (mechanics, electromagnetism, thermodynamics, statistical physics), engineering teaching (circuits, control theory, signal processing, mechanical analysis), step-by-step problem-solving content, "watch me think on paper" pedagogy, mathematical proofs with diagrams, comparative-case engineering analyses. Especially when the content emphasizes the *process* of arriving at an answer rather than the polished result. Output language tracks source content.

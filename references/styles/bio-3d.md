@@ -86,6 +86,71 @@ Medium. Per slide: 1 hero diagram + 4-8 labels + 1 legend + 0-1 scale annotation
 - Place more than one competing 3D subject on a single slide
 - Box label text with frames or bubbles (legend is the only allowed boxed element)
 
+## Deck Signature
+
+Text placement and styling values used by `scripts/compose-text.ts` when rendering the text overlay. Positions are fractional `[x, y]` on the image (0,0 = top-left, 1,1 = bottom-right).
+
+```yaml
+title:
+  position: [0.5, 0.10]
+  align: center
+  font_family: cjk
+  font_size: 40
+  font_weight: 600
+  color: "#1A1A1A"
+
+subtitle:
+  position: [0.5, 0.17]
+  align: center
+  font_family: cjk
+  font_size: 22
+  font_weight: 400
+  color: "#6B7280"
+
+label_text:
+  font_family: cjk
+  font_size: 18
+  font_weight: 400
+  color: "#1A1A1A"
+
+label_leader:
+  color: "#2D2D2D"
+  width: 1.5
+  end_shape: arrowhead
+  anchor_shape: none
+
+legend:
+  default_position: bottom-right
+  padding: 16
+  fill: "#EEF3F8"
+  border: "#C7D7E5"
+  border_width: 1
+  border_radius: 8
+  item_height: 28
+  item_text_font_size: 14
+  item_icon_radius: 6
+
+scale_annotation:
+  default_position: bottom-left
+  font_family: latin
+  font_size: 14
+  color: "#6B7280"
+  arrow: double_headed
+
+frame:
+  enabled: false
+  color: "#E5E7EB"
+  width: 1
+  radius: 12
+
+spatial_context_label:
+  enabled: true
+  font_family: cjk
+  font_size: 16
+  color: "#6B7280"
+  positions: [[0.05, 0.10], [0.05, 0.90]]
+```
+
 ## Best For
 
 Biology, chemistry, biochemistry, anatomy, microbiology, pharmacology, cell biology, molecular biology, and general life-science popular-science / classroom teaching. Especially: cell structure, organelle anatomy, molecular mechanisms, signaling cascades, anatomical cross-sections, physiological processes. Output language tracks source content (English source → English deck; Chinese source → Chinese deck).
